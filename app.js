@@ -28,10 +28,34 @@ var PLAYERS = [
 
 ]
 
+function Stats(props) {
+  var totalPlayers = players.length
+
+  return(
+    <table>
+      <tbody>
+        <tr>
+          <td>Players:</td>
+          <td>{totalPlayers}</td>
+        </tr>
+        <tr>
+          <td>Total Points:</td>
+          <td>123</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+Stats.propTypes = {
+  players = PropTypes.array.isRequired
+}
+
 function Header(props) {
   return(
     <div className="header">
-     <h1>{props.title}</h1>
+      <Stats players={}/>
+      <h1>{props.title}</h1>
    </div>
   );
 }
@@ -98,8 +122,9 @@ var Application = createReactClass({
     };
   },
 
-onScoreChange: function(delta) {
-  console.log('onScoreChange is working', delta);
+onScoreChange: function(index, delta) {
+  this.state.players[index].score += delta;
+  this.setState(this.state);
 },
 
   render: function(){
@@ -107,10 +132,10 @@ onScoreChange: function(delta) {
       <div className="scoreboard">
         <Header title={this.props.title}/>
         <div className="players">
-          {this.state.players.map (function(player) {
+          {this.state.players.map (function(player, index) {
             return (
               <Player
-                onScoreChange={this.onScoreChange}
+                onScoreChange={function(delta) {this.onScoreChange(index, delta)}.bind(this)}
                 name={player.name}
                 score={player.score}
                 key={player.id}/>
