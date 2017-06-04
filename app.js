@@ -44,36 +44,36 @@ Header.propTypes = {
 function Counter(props){
   return(
     <div className="counter">
-      <button className="counter-action decrement"> - </button>
+      <button className="counter-action decrement" onClick={function() {props.onChange(-1);}}> - </button>
         <div className="counter-score"> {props.score} </div>
-      <button className="counter-action increment"> + </button>
+      <button className="counter-action increment" onClick={function() {props.onChange(1);}}> + </button>
     </div>
   );
 }
 
 Counter.propTypes = {
-  score: PropTypes.number.isRequired
+  score: PropTypes.number.isRequired,
+  onChange: PropTypes.func.isRequired
 }
 
-var Player = createReactClass({
-  PropTypes: {
-    name: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired
-  },
-
-  render: function(){
-    return(
-      <div className="player">
-        <div className="player-name">
-          {this.props.name}
-        </div>
-        <div className="player-score">
-          <Counter score={this.props.score}/>
-        </div>
+function Player(props){
+  return(
+    <div className="player">
+      <div className="player-name">
+        {props.name}
       </div>
-    );
-  }
-});
+      <div className="player-score">
+        <Counter score={props.score} onChange={props.onScoreChange}/>
+      </div>
+    </div>
+  );
+}
+
+Player.propTypes = {
+  name: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired,
+  onScoreChange: PropTypes.func.isRequired
+}
 
 
 var Application = createReactClass({
@@ -98,14 +98,24 @@ var Application = createReactClass({
     };
   },
 
+onScoreChange: function(delta) {
+  console.log('onScoreChange is working', delta);
+},
+
   render: function(){
     return(
       <div className="scoreboard">
         <Header title={this.props.title}/>
         <div className="players">
           {this.state.players.map (function(player) {
-            return <Player name={player.name} score={player.score} key={player.id}/>
-          })}
+            return (
+              <Player
+                onScoreChange={this.onScoreChange}
+                name={player.name}
+                score={player.score}
+                key={player.id}/>
+            );
+          }.bind(this))}
         </div>
       </div>
     );
